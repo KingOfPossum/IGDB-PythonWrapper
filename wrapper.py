@@ -2,7 +2,7 @@ from requests import post
 
 API_URL = "https://api.igdb.com/v4/"
 
-class IGDB_Wrapper:
+class IGDBWrapper:
     def __init__(self, client_id: str, auth_token: str):
         """
         Initializes the IDGB_Wrapper with the client ID and authentication token needed for api requests.
@@ -12,7 +12,7 @@ class IGDB_Wrapper:
         self.client_id = client_id
         self.auth_token = auth_token
 
-    def request(self,endpoint: str, query: str) -> str:
+    def request(self,endpoint: str, query: str) -> dict:
         """
         Makes a request to the IGDB API.
         :param endpoint: The endpoint
