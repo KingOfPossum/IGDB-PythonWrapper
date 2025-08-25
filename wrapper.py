@@ -19,6 +19,8 @@ class IGDBWrapper:
         :param query: The query to be sent to the endpoint.
         :return: The result of the request in JSON format.
         """
+        print(query)
+
         url = self._construct_url(endpoint)
         params = self._get_params(query)
 
