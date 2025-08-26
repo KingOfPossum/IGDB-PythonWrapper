@@ -1,8 +1,9 @@
+import datetime
+import unicodedata
+
 from dataclasses import dataclass, field
 from typing import Optional
 from wrapper import IGDBWrapper
-
-import datetime
 
 def safe_get(data, *keys, default=None):
     if data is None:
@@ -17,6 +18,14 @@ def safe_get(data, *keys, default=None):
         else:
             return default
     return data
+
+def get_entry(result,name):
+    normalized_name = unicodedata.normalize('NFKC',name)
+    for entry in result:
+        normalized_entry_name = unicodedata.normalize('NFKC',entry['name'])
+        if normalized_name == normalized_entry_name:
+            return entry
+    return result[0]
 
 @dataclass
 class Game:
@@ -288,7 +297,8 @@ class Game:
         if not result:
             print("No game found!")
             return None
-        data = result[0]
+
+        data = _get_entry(result,name)
 
         params_dict = {param:safe_get(data,*param.split('.')) for param in params}
 
@@ -353,6 +363,7 @@ class Game:
 
             values['url'] = self.url
             values['platforms'] = self.platforms.copy()
+            values['cover'] = self.cover
 
             return f"Game({self.name},ID:{self.id})\n" + "".join([f"  {key.upper()}: {value}\n" for key,value in values.items()])
         else:
