@@ -1,4 +1,3 @@
-import inspect
 from dataclasses import dataclass, field
 from typing import Optional
 from wrapper import IGDBWrapper
@@ -303,14 +302,37 @@ class Game:
             cache=params_dict
         )
 
+    def load_all(self):
+        params = []
+        for _name in dir(Game):
+            attr = getattr(Game, _name)
+            if isinstance(attr, property):
+                source = attr.fget.__doc__ if attr.fget and attr.fget.__doc__ else _name
+                params.append(source)
+
+        params = list(set(params))
+
+        fields = ",".join(params)
+        query = f'fields {fields}; where id = {self.id};'
+
+        result = self.wrapper.request('games', query)
+        if not result:
+            print("No game found!")
+            return
+        data = result[0]
+
+        params_dict = {param: safe_get(data, *param.split('.')) for param in params}
+        self.cache = params_dict
+
     def _lazy_load(self,field_name: str):
         if field_name not in self.cache:
             query = f'fields {field_name}; where id = {self.id};'
             result = self.wrapper.request('games', query)
 
             if result:
-                if safe_get(result,*field_name.split('.')):
-                    self.cache[field_name] = safe_get(result,*field_name.split('.'))[0]
+                value = safe_get(result,*field_name.split('.'))
+                if value:
+                    self.cache[field_name] = value
                 else:
                     self.cache[field_name] = None
             else:
@@ -322,13 +344,17 @@ class Game:
 
     def to_full_string(self,show_all: bool = False):
         if show_all:
+            self.load_all()
             values = {
                 name: getattr(self, name)
                 for name in dir(self.__class__)
                 if isinstance(getattr(self.__class__, name), property)
             }
 
-            return "".join([f" {key}:{value}\n" for key,value in values.items()])
+            values['url'] = self.url
+            values['platforms'] = self.platforms.copy()
+
+            return f"Game({self.name},ID:{self.id})\n" + "".join([f"  {key.upper()}: {value}\n" for key,value in values.items()])
         else:
             return (
                 f"Game({self.name}):\n"
