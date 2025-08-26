@@ -80,7 +80,8 @@ class Game:
     def first_release_date(self):
         """first_release_date"""
         if self._lazy_load('first_release_date'):
-            return datetime.datetime.fromtimestamp(self._lazy_load('first_release_date'), datetime.UTC)
+            release_date = self._lazy_load('first_release_date')
+            return datetime.datetime.fromtimestamp(release_date, datetime.UTC)
         return None
 
     @property
@@ -279,9 +280,7 @@ class Game:
                     params.append(source)
 
         FIELDS = list(set(FIELDS + params))
-
         fields = ",".join(FIELDS)
-        print(fields)
 
         platform_txt = f"&(platforms.name ~ *\"{platform}\"* | platforms.abbreviation ~ *\"{platform}\"*)" if platform else ""
         query = f'fields {fields}; where name ~ *\"{name}\"*{platform_txt}; sort rating desc; limit 100;'
@@ -311,7 +310,7 @@ class Game:
 
             if result:
                 if safe_get(result,*field_name.split('.')):
-                    self.cache[field_name] = safe_get(result,*field_name.split('.'))
+                    self.cache[field_name] = safe_get(result,*field_name.split('.'))[0]
                 else:
                     self.cache[field_name] = None
             else:
