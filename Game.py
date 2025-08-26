@@ -40,6 +40,11 @@ class Game:
     cache: dict = field(default_factory=dict,repr=False)
 
     @property
+    def age_ratings(self):
+        """age_ratings.rating_category.rating"""
+        return self._lazy_load('age_ratings.rating_category.rating')
+
+    @property
     def aggregated_rating(self):
         """aggregated_rating"""
         return self._lazy_load('aggregated_rating')
@@ -65,9 +70,19 @@ class Game:
         return self._lazy_load('bundles.name')
 
     @property
+    def checksum(self):
+        """checksum"""
+        return self._lazy_load('checksum')
+
+    @property
     def collections(self):
         """collections.name"""
         return self._lazy_load('collections.name')
+
+    @property
+    def created_at(self):
+        """created_at"""
+        return self._lazy_load('created_at')
 
     @property
     def dlcs(self):
@@ -83,6 +98,11 @@ class Game:
     def expansions(self):
         """expansions.name"""
         return self._lazy_load('expansions.name')
+
+    @property
+    def external_games(self):
+        """external_games.name"""
+        return self._lazy_load('external_games.name')
 
     @property
     def first_release_date(self):
@@ -253,6 +273,11 @@ class Game:
         return self._lazy_load('total_rating_count')
 
     @property
+    def updated_at(self):
+        """updated_at"""
+        return self._lazy_load('updated_at')
+
+    @property
     def version_parent(self):
         """version_parent.name"""
         return self._lazy_load('version_parent.name')
@@ -298,7 +323,7 @@ class Game:
             print("No game found!")
             return None
 
-        data = _get_entry(result,name)
+        data = get_entry(result,name)
 
         params_dict = {param:safe_get(data,*param.split('.')) for param in params}
 
