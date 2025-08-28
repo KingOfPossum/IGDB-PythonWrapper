@@ -333,7 +333,7 @@ class Game:
             name=safe_get(data, "name"),
             url=safe_get(data, "url"),
             platforms=[p["name"] for p in data.get("platforms",[])],
-            cover=("https:" + safe_get(data, "cover", "url",default="")) if safe_get(data, "cover","url",default="") else None,
+            cover=("https:" + safe_get(data, "cover", "url",default="").replace('t_thumb','t_1080p')) if safe_get(data, "cover","url",default="") else None,
             cache=params_dict
         )
 
